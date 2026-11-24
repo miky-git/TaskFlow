@@ -1,40 +1,22 @@
-## API de tareas
+## Estados de carga y error en TaskFlow — Sesión 8
 
-En esta sesión conecté TaskFlow con JSONPlaceholder, una API REST pública que proporciona datos de prueba. Esto permite consultar tareas desde internet en lugar de utilizar únicamente las cinco tareas locales de las sesiones anteriores.
+En esta sesión mejoré la forma en que TaskFlow muestra las tareas obtenidas de la API REST. Ahora la aplicación permite identificar cuándo está cargando información, cuándo recibe tareas, cuándo la respuesta está vacía y cuándo ocurre un error de conexión.
 
-### Endpoint utilizado
+### Pruebas realizadas
 
-URL base: https://jsonplaceholder.typicode.com
+1. Estado de carga
+Al iniciar TaskFlow o actualizar las tareas, aparece un indicador circular mientras se espera la respuesta de la API.
+2. Estado con datos
+Con `userId = 2` y conexión a internet, la aplicación muestra las tareas obtenidas de JSONPlaceholder. También permite abrir sus detalles y consultar el estado de cada actividad.
+3. Estado vacío
+Cambié temporalmente el identificador a `userId = 9999`. Como la API no devolvió tareas, apareció el mensaje «Todavía no hay tareas para mostrar» junto con el botón «Actualizar».
+4. Estado de error
+Desconecté temporalmente internet y presioné «Actualizar». La aplicación mostró «No se pudieron cargar las tareas» y habilitó el botón «Reintentar».
+5. Recuperación mediante Reintentar
+Restablecí la conexión a internet y presioné «Reintentar» sin cerrar TaskFlow. La aplicación volvió a consultar la API y mostró nuevamente las tareas.
 
-Endpoint: `GET /todos?userId=2`
+### Resultado
 
-Método HTTP: GET
+Comprobé que TaskFlow diferencia una respuesta vacía de un error de conexión. Además, las pantallas de listado y detalle continúan funcionando mediante la arquitectura MVVM y Provider.
 
-Usuario consultado: 2
-
-Elegí el usuario 2 para comprobar que la aplicación puede consultar las tareas de diferentes usuarios mediante el parámetro `userId`.
-
-### Datos recibidos de la API
-
-La respuesta contiene cuatro campos:
-
-- `userId`: identifica al usuario al que pertenece la tarea.
-- `id`: identificador de la tarea.
-- `title`: título de la actividad.
-- `completed`: indica si está completada o pendiente.
-
-### Adaptación al modelo Task
-
-Como la API no proporciona todos los campos de nuestro modelo, TaskFlow utiliza los siguientes valores:
-
-- `description`: Sin descripción (API).
-- `priority`: Sin prioridad (API).
-- `isCompleted`: obtiene su valor del campo `completed`.
-
-La conversión de los datos JSON se realiza mediante `Task.fromJson()`.
-
-### Funcionamiento de la consulta
-
-La aplicación utiliza Dio para realizar peticiones HTTP. `TaskApiService` se encarga de consultar la API, `RemoteTaskRepository` administra los datos recibidos y `TasksViewModel` comunica los cambios a las pantallas mediante Provider.
-
-Al completar una tarea, el estado cambia en la aplicación y se actualizan tanto el listado como el detalle. Sin embargo, el cambio se guarda únicamente en memoria, por lo que al reiniciar TaskFlow vuelve a mostrarse el estado proporcionado por la API.
+Al finalizar las pruebas, restauré `userId = 2` para mantener la consulta remota configurada en la sesión anterior.
