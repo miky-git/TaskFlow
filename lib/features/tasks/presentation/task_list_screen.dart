@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
+import 'task_form_screen.dart';
 import 'tasks_view_model.dart';
 
 class TaskListScreen extends StatelessWidget {
@@ -25,7 +26,21 @@ class TaskListScreen extends StatelessWidget {
         ],
       ),
       body: _buildBody(context, viewModel),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _openForm(context),
+        tooltip: 'Nueva tarea',
+        child: const Icon(Icons.add),
+      ),
     );
+  }
+
+  Future<void> _openForm(BuildContext context) async {
+    final draft = await context.push<TaskDraft>('/new');
+    if (draft != null && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Borrador guardado: ${draft.title}')),
+      );
+    }
   }
 
   Widget _buildBody(BuildContext context, TasksViewModel viewModel) {
